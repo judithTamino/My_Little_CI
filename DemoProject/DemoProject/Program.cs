@@ -10,6 +10,11 @@ namespace DemoProject
     {
         static void Main(string[] args)
         {
+            Calc calc = new Calc();
+            string print = calc.Check(7, 9).ToString();
+            Console.WriteLine(print);
         }
+
+
     }
 }
