@@ -6,8 +6,10 @@ namespace CIApp
 {
     internal class Program
     {
-        private static string projectPath = @"C:\Users\user\Desktop\My_Little_CI\DemoProject\";
-        private static string solutionPath = @"C:\Users\user\Desktop\My_Little_CI\DemoProject\DemoProject.sln";
+        // fileWatcher
+        private static string projectPath = @"C:\Users\yosef\source\repos\My_Little_CI\DemoProject\";
+        //msBuild
+        private static string solutionPath = @"C:\Users\yosef\source\repos\My_Little_CI\DemoProject\DemoProject.sln";
         //private static string ChangeTextFile = @"C:\Users\user\Desktop\Change.txt";
 
         static void Main(string[] args)
@@ -69,8 +71,9 @@ namespace CIApp
 
         private static void RunTest()
         {
-            string testDllPath = @"C:\Users\user\Desktop\My_Little_CI\DemoProject\TestProject\bin\Debug\net6.0\TestProject.dll";
-            string exeFilePath = @"C:\Users\user\Desktop\My_Little_CI\MyLittelCI\packages\NUnit.ConsoleRunner.3.15.0\tools\nunit3-console.exe";
+            string testDllPath = @"C:\Users\yosef\source\repos\My_Little_CI\DemoProject\TestProject\bin\Debug\net6.0\TestProject.dll";
+           
+            string exeFilePath = @"C:\Users\yosef\source\repos\My_Little_CI\MyLittelCI\packages\NUnit.ConsoleRunner.3.15.0\tools\nunit3-console.exe";
 
             RunProcess(exeFilePath, testDllPath);
         }
