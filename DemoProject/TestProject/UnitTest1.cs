@@ -20,7 +20,7 @@ namespace TestProject
 
             int ret = calc.Check(1, 1);
 
-            Assert.That(2,Is.EqualTo(ret));
+            Assert.That(ret,Is.EqualTo(2));
         }
 
         public void Test2()
@@ -28,7 +28,7 @@ namespace TestProject
 
             int ret = calc.Check(5, 7);
 
-            Assert.That(12, Is.EqualTo(ret));
+            Assert.That(ret, Is.EqualTo(12));
         }
 
     }

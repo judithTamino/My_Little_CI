@@ -13,14 +13,14 @@ namespace CIApp
     {
 
         private static string projectPath = @"C:\Users\user\Desktop\My_Little_CI\DemoProject\";
-        private const string solutionPath = @"C:\Users\user\Desktop\My_Little_CI\DemoProject\DemoProject.sln";
-        private const string ChangeTextFile = @"C:\Users\user\Desktop\Change.txt";
+        private static string solutionPath = @"C:\Users\user\Desktop\My_Little_CI\DemoProject\DemoProject.sln";
+        private static string ChangeTextFile = @"C:\Users\user\Desktop\Change.txt";
 
         static void Main(string[] args)
         {
             Watcher();
         }
-
+        
         private static void Watcher()
         {
             using (FileSystemWatcher watcher = new FileSystemWatcher())
@@ -36,14 +36,13 @@ namespace CIApp
                 watcher.Filter = "*.*";// can use *.txt for only text files
 
                 watcher.Changed += OnChanged;
-                watcher.Created += OnChanged;
-                watcher.Changed += MSBuild;
+                //watcher.Changed += MSBuild;
                 watcher.EnableRaisingEvents = true;
                 Console.ReadKey(); //continue until user enters a key
             }
         }
 
-        private static void MSBuild(object source, FileSystemEventArgs e)
+        private static void MSBuild()
         {
             string pathToBuildSolution = solutionPath;
 
@@ -72,17 +71,48 @@ namespace CIApp
 
             p.WaitForExit();
             Console.WriteLine(sb.ToString());
+
+            if (p.ExitCode == 0)
+                RunTest();
+               // NunitTestingConsole();
+        }
+
+        private static void RunTest()
+        {
+            string testDllPath = @"C:\Users\user\Desktop\My_Little_CI\DemoProject\TestProject\bin\Debug\net6.0\TestProject.dll";
+            string exeFilePath = @"C:\Users\user\Desktop\My_Little_CI\MyLittelCI\packages\NUnit.ConsoleRunner.3.15.0\tools\nunit3-console.exe";
+
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            startInfo.CreateNoWindow = false;
+            startInfo.UseShellExecute = false;
+            startInfo.FileName = exeFilePath;
+            startInfo.Arguments = testDllPath;
+
+            try
+            {
+                using (Process p = Process.Start(startInfo))
+                    p.WaitForExit();
+            }
+            catch(Exception e)
+            {
+                string msg = e.Message;
+            }
         }
 
         private static void WriteLine(string line)
         {
             File.AppendAllText(ChangeTextFile, Environment.NewLine + line);
+
+            Console.BackgroundColor = ConsoleColor.Green;
             Console.WriteLine(ChangeTextFile, Environment.NewLine + line);
+            Console.ResetColor();
+
+            MSBuild();
         }
 
         private static void OnChanged(object source, FileSystemEventArgs e)
         {
-            WriteLine("Path:" + e.FullPath + "Type:" + e.ChangeType + ",Date:" + DateTime.Now);
+            WriteLine("Path:" + e.FullPath + " " + "Type:" + e.ChangeType + " " + ",Date:" + DateTime.Now);
         }
     }
 }
