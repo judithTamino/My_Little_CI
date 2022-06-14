@@ -5,7 +5,7 @@ namespace TestProject
 
     public class Tests
     {
-        public Calc calc; 
+        public Calc calc;
 
         [SetUp]
         public void Setup()
@@ -20,9 +20,10 @@ namespace TestProject
 
             int ret = calc.Check(1, 1);
 
-            Assert.That(ret,Is.EqualTo(2));
+            Assert.That(ret, Is.EqualTo(2));
         }
 
+        [Test]
         public void Test2()
         {
 
