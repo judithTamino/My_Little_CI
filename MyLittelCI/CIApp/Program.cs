@@ -6,23 +6,25 @@ namespace CIApp
 {
     internal class Program
     {
-        // fileWatcher
-        private static string projectPath = @"C:\Users\yosef\source\repos\My_Little_CI\DemoProject\";
-        //msBuild
-        private static string solutionPath = @"C:\Users\yosef\source\repos\My_Little_CI\DemoProject\DemoProject.sln";
+
+        private static string[] allPath;
+
         //private static string ChangeTextFile = @"C:\Users\user\Desktop\Change.txt";
 
         static void Main(string[] args)
         {
+            allPath = args;
             Watcher();
         }
+
+       
 
         private static void Watcher()
         {
             using (FileSystemWatcher watcher = new FileSystemWatcher())
             {
 
-                watcher.Path = projectPath;
+                watcher.Path = allPath[0];
                 watcher.NotifyFilter = NotifyFilters.LastWrite
                     | NotifyFilters.LastAccess
                     | NotifyFilters.FileName
@@ -59,7 +61,7 @@ namespace CIApp
         {
             string exeMSBulidPath = @"C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe";
 
-            if (RunProcess(exeMSBulidPath, solutionPath))
+            if (RunProcess(exeMSBulidPath, allPath[1]))
             {
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine("Start running tests");
@@ -71,9 +73,9 @@ namespace CIApp
 
         private static void RunTest()
         {
-            string testDllPath = @"C:\Users\yosef\source\repos\My_Little_CI\DemoProject\TestProject\bin\Debug\net6.0\TestProject.dll";
+            string testDllPath = allPath[2];
            
-            string exeFilePath = @"C:\Users\yosef\source\repos\My_Little_CI\MyLittelCI\packages\NUnit.ConsoleRunner.3.15.0\tools\nunit3-console.exe";
+            string exeFilePath = allPath[3];
 
             RunProcess(exeFilePath, testDllPath);
         }
@@ -81,7 +83,7 @@ namespace CIApp
         static DateTime lastRead = DateTime.MinValue;
         private static void OnChanged(object source, FileSystemEventArgs e)
         {
-            DateTime lastWrite = File.GetLastWriteTime(projectPath);
+            DateTime lastWrite = File.GetLastWriteTime(allPath[0]);
             if (lastWrite != lastRead)
             {
                 RunBulid();
