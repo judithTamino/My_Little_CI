@@ -6,18 +6,12 @@ namespace CIApp
 {
     internal class Program
     {
-
         private static string[] allPath;
-
-        //private static string ChangeTextFile = @"C:\Users\user\Desktop\Change.txt";
-
         static void Main(string[] args)
         {
             allPath = args;
             Watcher();
         }
-
-       
 
         private static void Watcher()
         {
@@ -25,25 +19,29 @@ namespace CIApp
             {
 
                 watcher.Path = allPath[0];
-                watcher.NotifyFilter = NotifyFilters.LastWrite
-                    | NotifyFilters.LastAccess
-                    | NotifyFilters.FileName
-                    | NotifyFilters.DirectoryName
-                    | NotifyFilters.Size;
 
-                watcher.Filter = "*.*";// can use *.txt for only text files
+                watcher.NotifyFilter = NotifyFilters.Attributes
+                                     | NotifyFilters.CreationTime
+                                     | NotifyFilters.DirectoryName
+                                     | NotifyFilters.FileName
+                                     | NotifyFilters.LastAccess
+                                     | NotifyFilters.LastWrite
+                                     | NotifyFilters.Security
+                                     | NotifyFilters.Size;
 
                 watcher.Changed += OnChanged;
+
+                watcher.Filter = "*.cs";
+                watcher.IncludeSubdirectories = true;
                 watcher.EnableRaisingEvents = true;
 
+                Console.WriteLine("Press enter to exit.");
                 Console.ReadKey(); //continue until user enters a key
             }
         }
 
         private static bool RunProcess(string fileName, string arguments)
         {
-            Process process = new Process();
-
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.CreateNoWindow = false;
             startInfo.UseShellExecute = false;
