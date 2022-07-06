@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
+using System.Xml;
+using System.Diagnostics;
 
 namespace CIApp
 {
@@ -9,6 +10,10 @@ namespace CIApp
         private static string[] allPath;
         static void Main(string[] args)
         {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("WELCOME TO MY LITTLE CI");
+            Console.ResetColor();
+
             allPath = args;
             Watcher();
         }
@@ -17,9 +22,7 @@ namespace CIApp
         {
             using (FileSystemWatcher watcher = new FileSystemWatcher())
             {
-
                 watcher.Path = allPath[0];
-
                 watcher.NotifyFilter = NotifyFilters.Attributes
                                      | NotifyFilters.CreationTime
                                      | NotifyFilters.DirectoryName
@@ -36,7 +39,7 @@ namespace CIApp
                 watcher.EnableRaisingEvents = true;
 
                 Console.WriteLine("Press enter to exit.");
-                Console.ReadKey(); //continue until user enters a key
+                Console.ReadKey(); 
             }
         }
 
@@ -55,38 +58,44 @@ namespace CIApp
             }
         }
 
-        private static void RunBulid()
+        private static bool RunBulid()
         {
             string exeMSBulidPath = @"C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe";
+            string solutionPath = allPath[1];
 
-            if (RunProcess(exeMSBulidPath, allPath[1]))
-            {
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("Start running tests");
-                Console.ResetColor();
-
-                RunTest();
-            }
+            return RunProcess(exeMSBulidPath, solutionPath);
         }
 
         private static void RunTest()
         {
             string testDllPath = allPath[2];
-           
             string exeFilePath = allPath[3];
 
             RunProcess(exeFilePath, testDllPath);
         }
 
-        static DateTime lastRead = DateTime.MinValue;
         private static void OnChanged(object source, FileSystemEventArgs e)
         {
-            DateTime lastWrite = File.GetLastWriteTime(allPath[0]);
-            if (lastWrite != lastRead)
-            {
-                RunBulid();
-                lastRead = lastWrite;
-            }
+            UploadToGit uploadToGit = new UploadToGit();
+
+            bool isBulidSuccessfully = RunBulid();
+            RunTest();
+            int failedTest = GetFailedTest();
+
+            if (failedTest == 0 && isBulidSuccessfully)
+                uploadToGit.UploadFiles(e.FullPath);
+        }
+
+        public static int GetFailedTest()
+        {
+            string testResult = allPath[4];
+            XmlDocument document = new XmlDocument();
+            document.Load(testResult);
+
+            XmlElement rootElement = document.DocumentElement;
+            int failedTest = Convert.ToInt32(rootElement.GetAttribute("failed"));
+
+            return failedTest;
         }
     }
 }
