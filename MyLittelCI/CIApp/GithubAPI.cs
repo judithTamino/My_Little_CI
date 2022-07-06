@@ -133,5 +133,50 @@ namespace CIApp
                 Console.ResetColor();
             }
         }
+
+        public async Task<string[]> CreateTagObject(string latestCommitSha)
+        {
+            string endpoint = "git/tags";
+            string tagName = $"v.{Guid.NewGuid()}";
+            string[] tag = new string[2];
+
+            // create tag
+            JObject payload = new JObject();
+            JProperty Jtag = new JProperty("tag", tagName);
+            JProperty Jmessage = new JProperty("message", "initial version");
+            JProperty Jobject = new JProperty("object", latestCommitSha);
+            JProperty Jtype = new JProperty("type", "commit");
+
+            payload.Add(Jtag);
+            payload.Add(Jmessage);
+            payload.Add(Jobject);
+            payload.Add(Jtype);
+
+            JToken content = await MakePostRequest(endpoint, payload.ToString());
+            if(content.HasValues)
+            {
+                tag[0] = content["tag"].ToString();
+                tag[1] = content["sha"].ToString();
+            }
+
+            return tag;
+        }
+
+        public async Task<bool> AppendTagToRepository(string[] tag)
+        {
+            string endpoint = "git/refs";
+
+            JObject payload = new JObject();
+            JProperty Jreference = new JProperty("ref", $"refs/tags/{tag[0]}");
+            JProperty Jsha = new JProperty("sha", tag[1]);
+
+            payload.Add(Jreference);
+            payload.Add(Jsha);
+
+            JToken content = await MakePostRequest(endpoint, payload.ToString());
+            if (content.HasValues)
+                return true;
+            return false;
+        }
     }
 }

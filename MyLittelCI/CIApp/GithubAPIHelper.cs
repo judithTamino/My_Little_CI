@@ -6,7 +6,7 @@ namespace CIApp
 {
     internal class GithubAPIHelper
     {
-        private const string API_KEY = "GITHUB TOKEN";
+        private const string API_KEY = "Bearer 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";
         private const string BASE_URL = "https://api.github.com/repos/";
         private const string URL_PARAMS = "judithTamino/Demo_Project/";
 

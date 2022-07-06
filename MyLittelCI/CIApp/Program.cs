@@ -1,18 +1,23 @@
 ﻿using System;
-using System.IO;
-using System.Xml;
 using System.Diagnostics;
+using System.IO;
+using System.Threading.Tasks;
+using System.Xml;
 
 namespace CIApp
 {
     internal class Program
     {
         private static string[] allPath;
+        
         static void Main(string[] args)
         {
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("WELCOME TO MY LITTLE CI");
             Console.ResetColor();
+
+            TagCommit tagCommit = new TagCommit();
+            tagCommit.TagAndUploadToGithub();
 
             allPath = args;
             Watcher();
@@ -39,7 +44,7 @@ namespace CIApp
                 watcher.EnableRaisingEvents = true;
 
                 Console.WriteLine("Press enter to exit.");
-                Console.ReadKey(); 
+                Console.ReadKey();
             }
         }
 
@@ -83,7 +88,13 @@ namespace CIApp
             int failedTest = GetFailedTest();
 
             if (failedTest == 0 && isBulidSuccessfully)
+            {
+                Console.ForegroundColor = ConsoleColor.Magenta;
+                Console.WriteLine("UPLOADING FILES TO GITHUB...");
+                Console.ResetColor();
+
                 uploadToGit.UploadFiles(e.FullPath);
+            }
         }
 
         public static int GetFailedTest()
